@@ -27,7 +27,7 @@ class Controller:
 
         self._model.buildGraph(self._anno)
         numNodi, numArchi = self._model.getNumeriGrafo()
-        bestDriver, bestScore = self._model.getBestDriver()
+        bestDriver, bestScore = self._model.getBestDriver1()
 
         self._view.txt_result.clean()
         self._view.txt_result.controls.append(ft.Text("Grafo creato correttamente"))

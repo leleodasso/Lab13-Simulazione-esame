@@ -35,7 +35,7 @@ class DAO():
                     and res.raceId = rac.raceId
                     and rac.`year` = %s  """
 
-        cursor.execute(query, (anno, ))
+        cursor.execute(query, (anno,))
 
         for row in cursor:
             result.append(Driver(**row))
@@ -44,7 +44,7 @@ class DAO():
         return result
 
     @staticmethod
-    def getNumVittorie(u: Driver,v: Driver,anno):
+    def getNumVittorie(u: Driver, v: Driver, anno):
         conn = DBConnect.get_connection()
 
         result = []
@@ -55,25 +55,24 @@ class DAO():
                     where res.position is not null 
                     and res.raceId = rac.raceId
                     and rac.`year` = %s
-                    
+
                     and res2.position is not null 
                     and res2.raceId = rac2.raceId
                     and rac2.`year` = %s
-                    
+
                     and res.raceId = res2.raceId	
-                        
+
                     and res.driverId = %s	#il pilota a
                     and res2.driverId = %s	#il pilota b
                     and res.position < res2.position
-                    
+
                     order by res2.raceId  
                                          """
 
-        cursor.execute(query, ( anno, anno , u.driverId, v.driverId ))
+        cursor.execute(query, (anno, anno, u.driverId, v.driverId))
 
         for row in cursor:
             result.append(row["peso"])
         cursor.close()
         conn.close()
         return result
-

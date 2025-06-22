@@ -32,7 +32,7 @@ class Model:
     def getNumeriGrafo(self):
         return self.grafo.number_of_nodes(), self.grafo.number_of_edges()
 
-    def getBestDriver(self):
+    def getBestDriver1(self):
         bestScore = 0
         for nodo in self.grafo.nodes():
             sommaEntranti = 0
@@ -46,5 +46,20 @@ class Model:
                 bestDriver = nodo.driverRef
         return bestDriver, bestScore
 
+    def getBestDriver2(self):
+        bestScore = 0
+        bestDriver = None
+        for nodo in self.grafo.nodes:
+            sommaEntranti = 0
+            sommaUscenti = 0
+            for arcoUscente in self.grafo.out_edges(nodo, data=True):
+                sommaUscenti = sommaUscenti + arcoUscente[2]["weight"]
+            for arcoEntrante in self.grafo.in_edges(nodo, data=True):
+                sommaEntranti = sommaEntranti + arcoEntrante[2]["weight"]
 
+            if sommaUscenti - sommaEntranti > bestScore:
+                bestScore = sommaUscenti - sommaEntranti
+                bestDriver = nodo.driverRef
+
+        return bestDriver, bestScore
 
