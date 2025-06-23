@@ -24,10 +24,10 @@ CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON----------------------------------
     def __init__(self):
         self.grafo = nx.Graph()
 
-    def def buildGraph(self, anno):
+    def buildGraph(self, anno):
         #nodi
         listaNodi = DAO.getAllProducts(colore)
-        self._grafo.add_nodes_from(listaNodi)
+        self.grafo.add_nodes_from(listaNodi)
 
         #archi
         for u in listaNodi:
@@ -35,7 +35,7 @@ CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON----------------------------------
                 if u != v:
                     arco = DAO.getSameDaySales(u.Product_number,v.Product_number, anno)
                     if arco[0] > 0:
-                        self._grafo.add_edge(u, v, weight=arco[0])
+                        self.grafo.add_edge(u, v, weight=arco[0])
 
     def getNumeriGrafo(self):
         return self.grafo.number_of_nodes(), self.grafo.number_of_edges()
