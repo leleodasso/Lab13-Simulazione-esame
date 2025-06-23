@@ -216,4 +216,4 @@ a partire da questo database:
 https://github.com/TdP-2025/Lab13-Simulazione-esame/blob/main/database/formula1.sql.
 ed a partire da questa consegna: "              " .
 Creami 2 query: uno per la creazione dei nodi ed un altro per la creazione degli archi.
-Io mi occuperò di implementare le due query su python seguendo il paradigma DAO, MODEL, UI.
+Io mi occuperò di implementare le due query su python seguendo il paradigma DAO, MODEL, UI .
