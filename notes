@@ -109,6 +109,18 @@ PRENDI I NODI VICINI DI TUTTI I NODI, ASSOCIAGLI LA SOMMA DEI PESI DEI VICINI---
         listaViciniOrdinata = sorted(listaVicini, key=lambda x: x[1], reverse = True )
         return listaViciniOrdinata
 
+ELENCARE I VICINI DI UN NODO, DI UN SINGOLO NODO IN ORDINE DECRESCENTE DI PESO-------------------------------TdE_Flights
+
+    def getVicini(self):
+        listaTuplaVicini = []
+            vicini = self.grafo.neighbors(source)
+            for vicino in vicini:
+                peso = self.grafo[source][vicino]["weight"][0]
+                if peso is None:
+                    peso = 0
+                listaTuplaVicini.append((vicino, peso))
+            listaTuplaViciniOrdinata = sorted(listaTuplaVicini, key=lambda x: x[1], reverse = True )
+            return listaTuplaViciniOrdinata
 
 
 IL CAMMINO PIU LINGO A PARTIRE DA UN NODO. LONGEST PATH STARTING FROM A NODE--------------------------------------LAB 14
