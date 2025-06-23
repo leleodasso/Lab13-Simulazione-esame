@@ -1,0 +1,200 @@
+https://networkx.org/documentation/stable/reference/algorithms/connectivity.html
+
+LAB 10: DFS, BFS, COMPONENTE CONNESSA, GRADO DEL VERTICE
+CALCOLARE IL NUMERO DI COMPONENTI CONNESSE DI UN GRAFICO
+    def getNumCompConnesse(self):
+        return nx.number_connected_components(self._graph)
+
+RETURNARE I NODI
+    def getNodes(self):
+        return self.grafo.nodes()
+
+RETURNARE IL CONTO DEI VICINI DI TUTTI I NODI DI UN GRAFO (grado del vertice)
+for nodo in self._model.getNodes(): 		###########stampa
+            	self._view._txt_result.controls.append(ft.Text(f"{nodo.StateNme} -- {self.			_model.getNumConfinanti(nodo)} vicini."))
+---------------------------------------------------------------------------
+def getNumConfinanti(self, nodo):		##########formula
+        return len(list(self.grafo.neighbors(nodo)))
+
+
+PRENDERE UN VALORE DI UN OGGETTO DA UN DROPDOWN
+def _fillDD(self):
+        for el in self._model.getNodes():
+            	self._view._ddStato.options.append(ft.dropdown.Option(text=el.StateNme, data=el, 			on_click=self.read_dd_Stato))
+def read_dd_Stato(self, e):
+        self._currentCountry = e.control.data
+
+COMPONENTE CONNESSA
+def getRaggiungibili1(self, nodo):      #componente connessa nx_node_component      (ottiene la lista)
+        lista = nx.node_connected_component(self.grafo, nodo)#solo per grafi NON orientati
+        lista.remove(nodo)
+        return lista
+
+def getRaggiungibili2(self, nodo):      #componente connessa DFS -profondità- (ottiene l'albero)+veloce
+        tree = nx.dfs_tree(self.grafo, nodo)
+        lista = list(tree.nodes)
+        lista.remove(nodo)
+        return lista
+
+def getRaggiungibili3(self, nodo):         #componente connessa BFS  -lvl per lvl- (ottiene l'albero)
+        tree = nx.bfs_tree(self.grafo, nodo)
+        lista = list(tree.nodes)
+        lista.remove(nodo)
+        return lista
+
+
+LAB 12
+CREAZIONE ITERATIVA ARCHI PYTHON
+        #nodi
+        listaNodi = DAO.getAllProducts(colore)
+        self._grafo.add_nodes_from(listaNodi)
+
+        #archi
+        for u in listaNodi:
+            for v in listaNodi:
+                if u != v:
+                    arco = DAO.getSameDaySales(u.Product_number,v.Product_number, anno)
+                    if arco[0] > 0:
+                        self._grafo.add_edge(u, v, weight=arco[0])
+
+NUMERO DI NODI E ARCHi
+    def getNumGrafo(self):
+        return self._grafo.number_of_nodes(), self._grafo.number_of_edges()
+PASSARE E STAMPARE GLI ARCHI PESATI
+    def getArchi(self):
+        return self._grafo.edges(data=True)   #data = TRUE imporatante quando passo!
+
+ORDINAMENTO DEGLI ARCHI
+def TreArchiMigliori(self):
+        archiOrdinati = sorted(self._grafo.edges(data=True), key=lambda x: x[2]["weight"], 	reverse=False)
+        return archiOrdinati[-3:]
+
+
+
+LAB 13
+FILL DROPDOWN
+    def fillDDcountry(self):
+        for country in self._model.getAllCountries():
+            self._view.ddcountry.options.append(ft.dropdown.Option(text=country, data=country, on_click=self.read_dd_country))
+        self._view.update_page()
+
+    def read_dd_country(self, e):
+        self._currentCountry = e.control.data
+PRENDI I NODI VICINI DI TUTTI I NODI, ASSOCIAGLI LA SOMMA DEI PESI DEI VICINI
+    def getAllVicini(self):
+        listaVicini = []
+        for nodo in self.grafo.nodes():
+            conta = 0
+            viciniNodo = self.grafo.neighbors(nodo)
+            for vicino in viciniNodo:
+                peso = self.grafo[nodo][vicino]["weight"]
+                conta = conta + int(peso)
+            if conta >0:
+                listaVicini.append((nodo, conta))
+        listaViciniOrdinata = sorted(listaVicini, key=lambda x: x[1], reverse = True )
+        return listaViciniOrdinata
+LAB 14
+IL CAMMINO PIU LINGO A PARTIRE DA UN NODO. LONGEST PATH STARTING FROM A NODE
+    def getBFSNodesFromTree(self, source):
+        tree = nx.bfs_tree(self.grafo, self._idMap[int(source)])
+        archi = list(tree.edges())
+        nodi = list(tree.nodes())
+        return nodi[1:]
+
+    def getDFSNodesFromTree(self, source):
+        tree = nx.dfs_tree(self.grafo, source)
+        nodi = list(tree.nodes())
+        return nodi[1:]
+
+    def getCammino(self, sourceStr):
+
+        source = self._idMap[int(sourceStr)]  # Ottengo il nodo sorgente dalla mappa ID → nodo
+        cammino_piu_lungo = [] # Lista per salvare il cammino più lungo trovato finora
+
+        tree = nx.dfs_tree(self.grafo, source) # Creo un albero DFS a partire dal nodo sorgente
+        nodi = list(tree.nodes()) # Ottengo tutti i nodi raggiungibili da source tramite DFS
+
+        # Per ogni nodo raggiungibile nell’albero DFS...
+        for node in nodi:
+            cammino_temporaneo = [node] # Inizializzo il cammino temporaneo partendo dal nodo corrente
+
+            # Risalgo dal nodo corrente fino al nodo sorgente seguendo i predecessori
+            while cammino_temporaneo[0] != source:
+                # nx.predecessor restituisce un dizionario di liste di predecessori,
+                # quindi prendiamo il predecessore del nodo corrente cammino_temporaneo[0]
+                pred = nx.predecessor(tree, source, cammino_temporaneo[0])
+                # pred è una lista, prendo il primo elemento e lo aggiungo al cammino temporaneo poi vado ripeto
+                cammino_temporaneo.insert(0, pred[0])
+
+            # Se il cammino temporaneo è più lungo di quello salvato, lo aggiorno
+            if len(cammino_temporaneo) > len(cammino_piu_lungo):
+                cammino_piu_lungo = copy.deepcopy(cammino_temporaneo)
+
+        # Restituisco il cammino più lungo trovato
+        return cammino_piu_lungo
+
+LISTA ARCHI
+	listaNodi = DAO.getOrdiniStore(store)
+        print(len(listaNodi))
+        self.grafo.add_nodes_from(listaNodi)
+
+
+        #creo mappa e poi archi
+        for nodo in listaNodi:
+            self._idMap[nodo.order_id] = nodo
+
+        listaArchi = DAO.getAllEdges(self._idMap, store, giorni)
+        for arco in listaArchi:
+            self.grafo.add_edge(arco[0], arco[1], weight=arco[2])
+
+ITUNES
+DIMENSIONE COMPONENTE CONNESSA, NUMERO DI NODI DELLA COMPONENTE CONNESSA
+    def getDimCompConn(self, album):
+        return len(list(nx.node_connected_component(self.grafo, album)))
+
+
+----------------------DAO----------------statichmethod
+ @staticmethod
+ def getDDcolors():
+        conn = DBConnect.get_connection()
+
+        result = []
+
+        cursor = conn.cursor(dictionary=True)
+        query = """ select distinct gp.Product_color from go_products gp """
+
+        cursor.execute(query, ())
+
+        for row in cursor:
+            result.append(row["gp.Product_color"])
+        cursor.close()
+        conn.close()
+        return result
+
+
+---------------------dataclass-----------------------
+from dataclasses import dataclass
+
+import networkx as nx
+
+
+@dataclass
+class Product:
+    Product_number:int
+    Product_line:str
+    Product_type:str
+    Product:str
+    Product_brand:str
+    Product_color:str
+    Unit_cost:float
+    Unit_price:float
+
+    def __eq__(self, other):
+        return self.Product_number == other.Product_number
+
+    def __hash__(self):
+        return hash(self.Product_number)
+
+
+ATTENZIONE funzioni HANDLE...
+Ogni volta che colleghi una funzione a un evento (come on_click, on_change, ecc.) in Flet, devi includere ", e" nei parametri della funzione anche se usi una variabile "globale" (in realtà: di istanza, tipo self._chooseDD).
