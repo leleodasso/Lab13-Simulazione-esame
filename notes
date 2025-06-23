@@ -13,7 +13,7 @@ FILL DROPDOWN-------------------------------------------------------------------
     def handleCounty(self, e):
         ...
 
-RETURNARE I NODI-------------------------------------------------------------------------------------------------------
+RETURNARE I NODI--------------------------------------------------------------------------------------------------------
 
     def getNodes(self):
         return self.grafo.nodes()
@@ -186,3 +186,4 @@ DIMENSIONE COMPONENTE CONNESSA, NUMERO DI NODI DELLA COMPONENTE CONNESSA--------
 
 ATTENZIONE funzioni HANDLE...
 Ogni volta che colleghi una funzione a un evento (come on_click, on_change, ecc.) in Flet, devi includere ", e" nei parametri della funzione ( tipo self._chooseDD).
+Controllo che in view non ci sia un on_change che fa interferenza con il mio on_click del controller. (rimuovo l'on_change del view)
