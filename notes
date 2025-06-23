@@ -21,6 +21,10 @@ RETURNARE I NODI----------------------------------------------------------------
 
 CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON-------------------------------------------------------------------LAB 12
 
+    def __init__(self):
+        self.grafo = nx.Graph()
+
+    def def buildGraph(self, anno):
         #nodi
         listaNodi = DAO.getAllProducts(colore)
         self._grafo.add_nodes_from(listaNodi)
@@ -32,6 +36,10 @@ CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON----------------------------------
                     arco = DAO.getSameDaySales(u.Product_number,v.Product_number, anno)
                     if arco[0] > 0:
                         self._grafo.add_edge(u, v, weight=arco[0])
+
+    def getNumeriGrafo(self):
+        return self.grafo.number_of_nodes(), self.grafo.number_of_edges()
+
 
 NUMERO DI NODI E ARCHi--------------------------------------------------------------------------------------------------
     def getNumGrafo(self):
