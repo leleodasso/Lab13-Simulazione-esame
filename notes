@@ -21,6 +21,10 @@ RETURNARE I NODI----------------------------------------------------------------
 
 CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON-------------------------------------------------------------------LAB 12
 
+
+      ####  self._model.buildGraph(numMin)                              ####
+      ####  numNodi, numArchi = self._model.getNumeriGrafo()            ####
+
     def __init__(self):
         self.grafo = nx.Graph()
 
