@@ -1,5 +1,9 @@
 https://networkx.org/documentation/stable/reference/algorithms/connectivity.html
 
+self._view.txt_result.clean()
+self._view.txt_result.controls.append(ft.Text("DEVI SELESZIONARE UN GIORNO"))
+self._view.update_page()
+
 FILL DROPDOWN-----------------------------------------------------------------------------------------------------------
 
     def fillDDcountry(self):
