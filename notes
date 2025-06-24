@@ -33,6 +33,7 @@ CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON----------------------------------
         self.grafo = nx.Graph()
 
     def buildGraph(self, anno):
+        self.grafo.clear()
         #nodi
         listaNodi = DAO.getAllProducts(colore)
         self.grafo.add_nodes_from(listaNodi)
