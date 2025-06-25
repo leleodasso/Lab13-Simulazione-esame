@@ -1,0 +1,318 @@
+select distinct year
+from seasons s
+
+select distinct d.*
+from results res, races rac, drivers d
+where res.raceId = rac.raceId
+and d.driverId = res.driverId
+and rac.`year` = 2009
+and res.`position` is not null
+order by res.resultId
+
+
+select res1.raceId, res2.raceId, res1.driverId, res2.driverId, res1.position, res2.`position`, count(*) as c
+from results res1, races rac, results res2
+where res1.raceId = rac.raceId
+and res2.raceId = rac.raceId
+and rac.`year` = 2009
+and res1.`position` is not null
+and res2.`position` is not null
+and res1.driverId = 18
+and res2.driverId = 22
+and res1.position < res2.`position`
+
+
+SELECT  r1.driverId AS winnerId,  r2.driverId AS loserId,  COUNT(*) AS weight
+from results r1, races ra, results r2
+WHERE YEAR(ra.date) = 2009
+  AND r1.driverId <> r2.driverId
+  AND r1.position IS NOT NULL
+  AND r2.position IS NOT NULL
+  AND r1.position < r2.position
+  and r1.raceId = ra.raceId
+  and r1.raceId = r2.raceId
+GROUP BY r1.driverId, r2.driverId
+
+
+select *
+from results
+
+select r1.raceId, r2.raceId, r1.driverId, r2.driverId, r1.position, r2.position, r1.milliseconds, r2.milliseconds, r1.time,r2.time
+from results r1, results r2
+where r1.raceId = r2.raceId
+and r1.driverId <> r2.driverId
+and r1.position < r2.`position`
+and (r1.milliseconds/(1000) - r2.milliseconds/(1000)) < 40
+
+select *
+from circuits c
+
+#1) I nodi rappresentano i circuiti in cui si è disputata almeno una gara nell’anno selezionato.
+select distinct c.*
+from races r, circuits c
+where r.circuitId = c.circuitId
+and r.`year` =2009
+
+#Esiste un arco tra due circuiti se almeno un pilota ha corso in entrambi nel corso dell’anno.
+#Il peso dell’arco è il numero di piloti che hanno partecipato a gare su entrambi i circuiti quell’anno.
+select rac.circuitId, rac2.circuitId ,count(distinct res.driverId) as peso
+from results res, races rac, results res2, races rac2
+where res.raceId = rac.raceId
+and rac.`year` = 2009
+and res2.raceId = rac2.raceId
+and rac2.`year` = 2009
+and rac.circuitId < rac2.circuitId
+and res.driverId = res2.driverId
+group by rac.circuitId, rac2.circuitId
+
+#2) I nodi sono i costruttori (constructors) che hanno partecipato ad almeno una gara nell’anno selezionato.
+select distinct c.*
+from constructorresults cr, constructors c, races r
+where c.constructorId = cr.constructorId
+and r.raceId = cr.raceId
+and r.`year` = 2009
+
+#Esiste un arco da A a B se i piloti del costruttore A hanno ottenuto più punti, in media per gara, dei piloti del costruttore B.
+#Il peso dell’arco è la differenza di media punti/gara.
+SELECT t1.constructorId AS id1, t2.constructorId AS id2, (t1.p1 - t2.p2) AS diff
+FROM (  SELECT res.constructorId, AVG(res.points) AS p1
+	    FROM results res, races rac
+	    WHERE rac.year = 2009
+	    And res.raceId = rac.raceId
+	    GROUP BY res.constructorId) AS t1,
+	(   SELECT res.constructorId, AVG(res.points) AS p2
+	    FROM results res, races rac
+	    WHERE rac.year = 2009
+	    and  res.raceId = rac.raceId
+	    GROUP BY res.constructorId) AS t2
+WHERE t1.constructorId <> t2.constructorId
+AND t1.p1 > t2.p2;
+
+#3) I nodi rappresentano i piloti che hanno partecipato ad almeno una gara in un circuito selezionato.
+select distinct d.*
+from races rac, results res, drivers d
+where rac.raceId = res.raceId
+and d.driverId = res.driverId
+and rac.circuitId = 1
+
+#Esiste un arco da A a B se il pilota A ha ottenuto un miglior piazzamento medio del pilota B in quel circuito (tra tutte le gare corse lì).
+#Il peso è la differenza tra la media dei piazzamenti (B - A).
+select t1.driverId, t2.driverId, (t1.p-t2.p) as diff
+from
+(select res.driverId, avg(res.`position`) as p
+from races rac, results res
+where rac.raceId = res.raceId
+and rac.circuitId = 1
+and res.`position` is not null
+group by res.driverId) as t1,
+(select res.driverId, avg(res.`position`) as p
+from races rac, results res
+where rac.raceId = res.raceId
+and rac.circuitId = 1
+and res.`position` is not null
+group by res.driverId) as t2
+where t1.driverId <> t2.driverId
+and t1.p < t2.p
+
+#4) I nodi sono i piloti che hanno ottenuto almeno un giro veloce (fastestLap ≠ 0) in un circuito selezionato.
+select distinct d.*
+from results r , drivers d, races r2
+where d.driverId = r.driverId
+and r.raceId = r2.raceId
+and r2.circuitId = 1
+and r.fastestLap is not null
+#Esiste un arco da A a B se il pilota A ha ottenuto più giri veloci totali nel circuito selezionato rispetto a B.
+#Il peso dell’arco è la differenza tra i giri veloci totali di A e B.
+select t1.driverId, t2.driverId, (t1.fl_p - t2.fl_p) as peso
+from (select r.driverId, count(*) as fl_p
+from results r , drivers d, races r2
+where d.driverId = r.driverId
+and r.raceId = r2.raceId
+and r2.circuitId = 1
+and r.fastestLap is not null
+group by d.driverId ) as t1,
+(select r.driverId, count(*) as fl_p
+from results r , drivers d, races r2
+where d.driverId = r.driverId
+and r.raceId = r2.raceId
+and r2.circuitId = 1
+and r.fastestLap is not null
+group by d.driverId ) as t2
+where t1.driverId <> t2.driverId
+and t1.fl_p > t2.fl_p
+
+#5)I nodi sono i costruttori che hanno preso parte ad almeno una gara nel 2010.
+select distinct c.*
+from races rac, constructors c, results res
+where rac.`year` = 2010
+and rac.raceId = res.raceId
+and res.constructorId = c.constructorId
+#Esiste un arco da A a B se i piloti del costruttore A hanno avuto, in totale, meno ritiri (statusId ≠ 1) rispetto a quelli del costruttore B.
+#Il peso dell’arco è la differenza tra le quantità dei ritiri a gara.
+select t1.constructorId, t2.constructorId, (t1.peso - t2.peso) as diff
+from (select res.constructorId , count(*) as peso
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2010
+and res.statusId <> 1
+group by res.constructorId ) as t1,
+(select res.constructorId , count(*) as peso
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2010
+and res.statusId <> 1
+group by res.constructorId ) as t2
+where t1.constructorId <> t2.constructorId
+and t1.peso < t2.peso
+
+#6)I nodi sono i piloti che sono saliti sul podio (position = 1, 2, 3) almeno una volta in una stagione scelta (es: 2008).
+select distinct d.*
+from results res, races rac, drivers d
+where res.raceId = rac.raceId
+and rac.`year` = 2008
+and d.driverId = res.driverId
+and (res.`position` = 1 or res.`position` = 2 or res.`position` = 3)
+#Esiste un arco da A a B se A ha ottenuto più podi in quell’anno rispetto a B.
+#Il peso è la differenza tra i podi ottenuti
+select t1.driverId, t2.driverId, (t1.peso-t2.peso) as diff
+from (
+select res.driverId, count(*) as peso
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2008
+and (res.`position` = 1 or res.`position` = 2 or res.`position` = 3)
+group by res.driverId ) as t1,
+(select res.driverId, count(*) as peso
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2008
+and (res.`position` = 1 or res.`position` = 2 or res.`position` = 3)
+group by res.driverId) as t2
+where t1.driverId <> t2.driverId
+and t1.peso > t2.peso
+
+#7)I nodi sono i piloti che hanno corso almeno una gara nell’anno selezionato.
+select distinct d.*
+from results res, races rac, drivers d
+where d.driverId = res.driverId
+and res.raceId = rac.raceId
+and rac.`year` = 2009
+#Esiste un arco tra due piloti se hanno corso nello stesso team (constructor) nello stesso anno.
+#Il peso dell’arco è il numero di anni in cui hanno condiviso lo stesso team.
+select res1.driverId, res2.driverId, count(distinct r.year)
+from results res1, results res2, races r
+where r.raceId = res1.raceId
+and r.raceId = res2.raceId
+and res1.driverId <> res2.driverId
+and res1.constructorId = res2.constructorId
+group by res1.driverId, res2.driverId
+#Esiste un arco tra due piloti se hanno corso nello stesso team (constructor) nello stesso anno.
+#Il peso dell’arco è il numero di anni in cui hanno condiviso lo stesso team.
+select count( distinct r.year )
+from results res1, results res2, races r
+where res1.driverId = 2
+and res2.driverId = 808
+and res1.raceId = r.raceId
+and res2.raceId = r.raceId
+and res1.constructorId = res2.constructorId
+group by res1.driverId, res2.driverId
+
+#8)I nodi sono i circuiti dove si sono svolte gare nell’anno selezionato.
+select distinct c.*
+from results res, races rac, circuits c
+where res.raceId = rac.raceId
+and c.circuitId  = rac.circuitId
+and rac.`year` = 2009
+#Esiste un arco tra due circuiti se almeno un pilota ha partecipato a gare su entrambi i circuiti in quell’anno.
+#Il peso dell’arco è il numero di piloti condivisi tra i due circuiti.
+select t1.circuitId, t2.circuitId, count( * )
+from (select rac.circuitId, res.driverId
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2009) as t1,
+(select rac.circuitId, res.driverId
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.`year` = 2009
+) as t2
+where t1.circuitId > t2.circuitId
+and t1.driverId = t2.driverId
+group by t1.circuitId, t2.circuitId
+
+#9)I nodi sono i team (constructors) che hanno vinto almeno una gara nell’anno selezionato.
+select distinct c.*
+from results r, constructors c, races r2
+where r.constructorId = c.constructorId
+and r.raceId = r2.raceId
+and r2.year = 2009
+and r.`position` = 1
+
+#Esiste un arco da A a B se il team A ha più vittorie di B in quell’anno.
+#Il peso è la differenza nel numero di vittorie.
+select t1.constructorId, t2.constructorId, (t1.nVit-t2.nVit) as diff
+from(
+select res.constructorId, count(*) as nVit
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.year = 2009
+and res.`position` = 1
+group by res.constructorId ) as t1, (
+select res.constructorId, count(*) as nVit
+from results res, races rac
+where res.raceId = rac.raceId
+and rac.year = 2009
+and res.`position` = 1
+group by res.constructorId ) as t2
+where t1.constructorId <> t2.constructorId
+and t1.nVit > t2.nVit
+
+#10)I nodi sono i piloti che hanno partecipato a gare nell’anno selezionato.
+select distinct d.*
+from drivers d, results res, races rac
+where d.driverId = res.driverId
+and res.raceId = rac.raceId
+and rac.year = 2009
+#Due piloti sono collegati se hanno corso almeno una gara nello stesso circuito in quell’anno.
+#Il peso è il numero di circuiti condivisi.
+select res1.driverId, res2.driverId, count(distinct rac1.circuitId) as peso
+from results res1, races rac1, results res2, races rac2
+where rac1.year = 2009 and rac2.year = 2009
+and rac1.raceId = res1.raceId and rac2.raceId = res2.raceId
+and res1.driverId < res2.driverId
+and rac1.circuitId = rac2.circuitId
+group by res1.driverId, res2.driverId
+#Due piloti sono collegati se hanno corso almeno una gara nello stesso circuito in quell’anno.
+#Il peso è il numero di circuiti condivisi.
+select t1.driverId, t2.driverId, count(*) as peso
+from (
+    select distinct res.driverId, rac.circuitId
+    from results res, races rac
+    where res.raceId = rac.raceId
+    and rac.year = 2009
+) as t1,
+(
+    select distinct res.driverId, rac.circuitId
+    from results res, races rac
+    where res.raceId = rac.raceId
+    and rac.year = 2009
+) as t2
+where t1.driverId < t2.driverId
+and t1.circuitId = t2.circuitId
+group by t1.driverId, t2.driverId
+
+#11)I nodi sono i piloti che hanno effettuato almeno un pit stop nell’anno selezionato.
+select distinct d.*
+from drivers d, pitstops p, races r
+where d.driverId = p.driverId
+and r.`year` = 2016
+and r.raceId = p.raceId
+#Esiste un arco tra due piloti se hanno effettuato un pit stop nello stesso circuito e nello stesso giro.
+#Il peso dell’arco è il numero di volte in cui si sono fermati insieme in quel modo (stesso circuito, stesso lap).
+select *
+from (
+select p.driverId,
+from pitstops p, races r
+where r.raceId = p.raceId
+and r.`year` = 2016
+and p.driverId = 1
+)
