@@ -138,6 +138,23 @@ PRENDI I NODI VICINI DI TUTTI I NODI, ASSOCIAGLI LA SOMMA DEI PESI DEI VICINI---
         listaViciniOrdinata = sorted(listaVicini, key=lambda x: x[1], reverse = True )
         return listaViciniOrdinata
 
+ARCHI USCENTI MENO ARCHI ENTRANTI, ARCHI USCENTI - ARCHI ENTRANTI (PREDECESSORS() SUCCESSORS())-------------------LAB 13
+
+        def getBestDriver1(self):
+        bestScore = 0
+        for nodo in self.grafo.nodes():
+            sommaEntranti = 0
+            sommaUscenti = 0
+            for predecessore in self.grafo.predecessors(nodo):
+                sommaEntranti = sommaEntranti + self.grafo[predecessore][nodo]["weight"]
+            for successore in self.grafo.successors(nodo):
+                sommaUscenti = sommaUscenti + self.grafo[nodo][successore]["weight"]
+            if sommaUscenti - sommaEntranti > bestScore:
+                bestScore = sommaUscenti - sommaEntranti
+                bestDriver = nodo.driverRef
+        return bestDriver, bestScore
+
+
 ELENCARE I VICINI DI UN NODO, DI UN SINGOLO NODO IN ORDINE DECRESCENTE DI PESO-------------------------------TdE_Flights
 
     def getVicini(self):
