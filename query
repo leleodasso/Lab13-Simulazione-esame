@@ -46,7 +46,7 @@ and (r1.milliseconds/(1000) - r2.milliseconds/(1000)) < 40
 
 select *
 from circuits c
-
+------------------------------------------------------------------------------------------------------------------------
 #1) I nodi rappresentano i circuiti in cui si è disputata almeno una gara nell’anno selezionato.
 select distinct c.*
 from races r, circuits c
@@ -65,6 +65,7 @@ and rac.circuitId < rac2.circuitId
 and res.driverId = res2.driverId
 group by rac.circuitId, rac2.circuitId
 
+------------------------------------------------------------------------------------------------------------------------
 #2) I nodi sono i costruttori (constructors) che hanno partecipato ad almeno una gara nell’anno selezionato.
 select distinct c.*
 from constructorresults cr, constructors c, races r
@@ -87,7 +88,7 @@ FROM (  SELECT res.constructorId, AVG(res.points) AS p1
 	    GROUP BY res.constructorId) AS t2
 WHERE t1.constructorId <> t2.constructorId
 AND t1.p1 > t2.p2;
-
+------------------------------------------------------------------------------------------------------------------------
 #3) I nodi rappresentano i piloti che hanno partecipato ad almeno una gara in un circuito selezionato.
 select distinct d.*
 from races rac, results res, drivers d
@@ -113,7 +114,7 @@ and res.`position` is not null
 group by res.driverId) as t2
 where t1.driverId <> t2.driverId
 and t1.p < t2.p
-
+------------------------------------------------------------------------------------------------------------------------
 #4) I nodi sono i piloti che hanno ottenuto almeno un giro veloce (fastestLap ≠ 0) in un circuito selezionato.
 select distinct d.*
 from results r , drivers d, races r2
@@ -140,7 +141,7 @@ and r.fastestLap is not null
 group by d.driverId ) as t2
 where t1.driverId <> t2.driverId
 and t1.fl_p > t2.fl_p
-
+------------------------------------------------------------------------------------------------------------------------
 #5)I nodi sono i costruttori che hanno preso parte ad almeno una gara nel 2010.
 select distinct c.*
 from races rac, constructors c, results res
@@ -164,7 +165,7 @@ and res.statusId <> 1
 group by res.constructorId ) as t2
 where t1.constructorId <> t2.constructorId
 and t1.peso < t2.peso
-
+------------------------------------------------------------------------------------------------------------------------
 #6)I nodi sono i piloti che sono saliti sul podio (position = 1, 2, 3) almeno una volta in una stagione scelta (es: 2008).
 select distinct d.*
 from results res, races rac, drivers d
@@ -190,7 +191,7 @@ and (res.`position` = 1 or res.`position` = 2 or res.`position` = 3)
 group by res.driverId) as t2
 where t1.driverId <> t2.driverId
 and t1.peso > t2.peso
-
+------------------------------------------------------------------------------------------------------------------------
 #7)I nodi sono i piloti che hanno corso almeno una gara nell’anno selezionato.
 select distinct d.*
 from results res, races rac, drivers d
@@ -216,7 +217,7 @@ and res1.raceId = r.raceId
 and res2.raceId = r.raceId
 and res1.constructorId = res2.constructorId
 group by res1.driverId, res2.driverId
-
+------------------------------------------------------------------------------------------------------------------------
 #8)I nodi sono i circuiti dove si sono svolte gare nell’anno selezionato.
 select distinct c.*
 from results res, races rac, circuits c
@@ -238,7 +239,7 @@ and rac.`year` = 2009
 where t1.circuitId > t2.circuitId
 and t1.driverId = t2.driverId
 group by t1.circuitId, t2.circuitId
-
+------------------------------------------------------------------------------------------------------------------------
 #9)I nodi sono i team (constructors) che hanno vinto almeno una gara nell’anno selezionato.
 select distinct c.*
 from results r, constructors c, races r2
@@ -265,7 +266,7 @@ and res.`position` = 1
 group by res.constructorId ) as t2
 where t1.constructorId <> t2.constructorId
 and t1.nVit > t2.nVit
-
+------------------------------------------------------------------------------------------------------------------------
 #10)I nodi sono i piloti che hanno partecipato a gare nell’anno selezionato.
 select distinct d.*
 from drivers d, results res, races rac
@@ -299,7 +300,7 @@ from (
 where t1.driverId < t2.driverId
 and t1.circuitId = t2.circuitId
 group by t1.driverId, t2.driverId
-
+------------------------------------------------------------------------------------------------------------------------
 #11)I nodi sono i piloti che hanno effettuato almeno un pit stop nell’anno selezionato.
 select distinct d.*
 from drivers d, pitstops p, races r
