@@ -96,6 +96,30 @@ def getRaggiungibili3(self, nodo):                            #componente connes
         return lista
 
 
+TRE NODI MIGLIORI E NODI RIPETUTI NEGLI ARCHI----------------------------------------------------------------------LAB 11
+
+    def TreArchiMigliori(self):
+        self._archiOrdinati = sorted(self._grafo.edges(data=True), key=lambda x: x[2]["weight"], reverse=False)
+        self._archiOrdinati =  self._archiOrdinati[-3:]
+        return self._archiOrdinati
+
+    def ArchiRipetuti(self):
+        occorrenze = {}
+        for u,v, peso in self._archiOrdinati:       #la lista di partenza è self.grafo.edges(data=True)
+            if u in occorrenze:
+                occorrenze[u] += 1
+            else:
+                occorrenze[u] = 1
+            if v in occorrenze:
+                occorrenze[v] += 1
+            else:
+                occorrenze[v] = 1
+
+        nodiRipetuti = []
+        for nodo in occorrenze:
+            if occorrenze[nodo] > 1:
+                nodiRipetuti.append(nodo)
+
 
 
 
