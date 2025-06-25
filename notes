@@ -30,7 +30,7 @@ CREAZIONE ARCHI E NODI: ITERATIVA ARCHI PYTHON----------------------------------
       ####  numNodi, numArchi = self._model.getNumeriGrafo()            ####
 
     def __init__(self):
-        self.grafo = nx.Graph()
+        self.grafo = nx.Graph() #DiGraph()
 
     def buildGraph(self, anno):
         self.grafo.clear()
