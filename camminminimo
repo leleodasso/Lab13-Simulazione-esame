@@ -38,3 +38,27 @@ model:#-----------------------------------------
 
     def getShortestPath(self, u, v):
         return nx.single_source_dijkstra(self._grafo, u, v)
+
+
+---------------------------------------- ----------------------------------------
+---------------------------------------- ----------------------------------------
+---------------------------------------- ----------------------------------------
+---------------------------------------- ----------------------------------------
+path = nx.shortest_path(G, source='A', target='C', weight='weight')
+Return:
+Solo una lista: [percorso_da_A_a_C], ad esempio:
+['A', 'B', 'C']
+
+
+----------------------------------------
+nx.single_source_dijkstra(G, source, weight='weight')
+Return:
+(distances, paths)
+Dove:
+distances: dizionario {nodo: distanza_minima_da_source}
+paths: dizionario {nodo: [percorso_da_source_a_nodo]}
+
+Esempio:
+distances, paths = nx.single_source_dijkstra(G, source='A')
+print(distances)  # {'A': 0, 'B': 1, 'C': 3}
+print(paths)      # {'A': ['A'], 'B': ['A', 'B'], 'C': ['A', 'B', 'C']}
